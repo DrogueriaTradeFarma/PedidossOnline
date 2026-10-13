@@ -1,0 +1,325 @@
+<title>Pedidos Trade Farma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: una columna para celular; marca arriba, buscador, lista de productos, barra fija abajo con el pedido. Colores de Trade Farma: azul marino + naranja. */
+:root{
+  --bg:#f4f5fa; --surface:#ffffff; --ink:#151a45; --muted:#5c6185; --line:#dcdfee;
+  --accent:#1b2470; --accent-ink:#ffffff; --accent-soft:#e3e6f6; --brand2:#ff6200;
+  --ok:#1f8a4c; --warn:#b85200; --warn-soft:#fff0e5; --no:#b3261e; --no-soft:#fbe4e2; --ok-soft:#e1f3e8;
+  --wa:#1e9e57; --logo:#1b2470;
+  --f-display:"Montserrat", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1028; --surface:#181b3d; --ink:#e7e9f7; --muted:#a3a8cc; --line:#2c3061;
+  --accent:#8f9cff; --accent-ink:#0e1028; --accent-soft:#262c66; --brand2:#ff7a26;
+  --ok:#5fd18e; --warn:#ffa25c; --warn-soft:#3b2414; --no:#f2867e; --no-soft:#3d1c19; --ok-soft:#173326;
+  --wa:#36c274; --logo:#e7e9f7; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1028; --surface:#181b3d; --ink:#e7e9f7; --muted:#a3a8cc; --line:#2c3061;
+  --accent:#8f9cff; --accent-ink:#0e1028; --accent-soft:#262c66; --brand2:#ff7a26;
+  --ok:#5fd18e; --warn:#ffa25c; --warn-soft:#3b2414; --no:#f2867e; --no-soft:#3d1c19; --ok-soft:#173326;
+  --wa:#36c274; --logo:#e7e9f7; color-scheme:dark}
+*{box-sizing:border-box}
+.brand{display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:3px solid var(--brand2);margin-bottom:14px}
+.brand svg{width:44px;height:auto;flex:none}
+.brand span{font-family:var(--f-display);font-weight:800;letter-spacing:.06em;color:var(--logo);font-size:1.15rem}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.45}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:16px 120px;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--f-display);margin:0;text-wrap:balance;font-size:1.7rem;font-weight:800;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:4px 0 0}
+.status{font-size:.85rem;border-radius:8px;padding:8px 12px;background:var(--accent-soft);color:var(--accent)}
+.status.warn{background:var(--warn-soft);color:var(--warn)}
+label{font-weight:700;font-size:.95rem;display:block;margin-bottom:6px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+textarea{min-height:80px;resize:vertical}
+.filters{display:grid;grid-template-columns:1fr;gap:10px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:4px}
+.tab{font:inherit;font-weight:700;border:0;border-radius:10px;padding:10px;background:transparent;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.badge{display:inline-block;min-width:1.5em;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:.85rem}
+.tab[aria-selected="true"] .badge{background:var(--accent-ink);color:var(--accent)}
+.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.prod{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.prod.in{border-color:var(--accent)}
+.info{flex:1 1 200px;min-width:0}
+.name{font-weight:700;overflow-wrap:anywhere}
+.meta{color:var(--muted);font-size:.88rem}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.pill{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:2px 8px;border-radius:99px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.no{background:var(--no-soft);color:var(--no)}
+.step{display:flex;align-items:center;gap:4px;margin-left:auto}
+.step button,.add{font:inherit;font-weight:700;cursor:pointer;border-radius:10px;border:1.5px solid var(--accent);background:var(--surface);color:var(--accent)}
+.step button{width:42px;height:42px;font-size:1.3rem;line-height:1}
+.step .q{width:52px;text-align:center;padding:8px 2px;font-variant-numeric:tabular-nums;font-weight:700}
+.add{padding:10px 16px;background:var(--accent);color:var(--accent-ink);margin-left:auto}
+.add:disabled{background:transparent;border-color:var(--line);color:var(--muted);cursor:not-allowed}
+.empty,.more{color:var(--muted);text-align:center;padding:16px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1.5px solid var(--line)}
+.bar-in{max-width:608px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.bar .count{flex:1;font-weight:700}
+.btn{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:12px;padding:14px 18px;background:var(--accent);color:var(--accent-ink);text-decoration:none;text-align:center;display:inline-block}
+.btn.wa{background:var(--wa);color:#fff;width:100%;font-size:1.1rem}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.danger{background:var(--no);color:#fff}
+.slip{background:var(--surface);border:1.5px dashed var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.slip-h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.line{display:flex;gap:10px;align-items:center;padding-block:8px;border-top:1px solid var(--line);flex-wrap:wrap}
+.line .n{color:var(--muted);font-variant-numeric:tabular-nums;width:1.6em}
+.rm{font:inherit;background:none;border:0;color:var(--no);font-weight:700;cursor:pointer;padding:6px}
+.actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}
+pre{white-space:pre-wrap;font-family:var(--f-body);font-size:.9rem;background:var(--bg);border-radius:10px;padding:12px;margin:8px 0 0;overflow-x:auto}
+.note{font-size:.88rem;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700}
+@media (prefers-reduced-motion:no-preference){.prod{transition:border-color .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg viewBox="150 280 750 710" role="img" aria-label="Logo Trade Farma"><rect x="160" y="288" width="205" height="158" fill="#ff6200"/><path d="M424 286H893V449H594V983H424Z" fill="var(--logo)"/><rect x="666" y="533" width="200" height="163" fill="var(--logo)"/></svg>
+      <span>TRADE FARMA</span>
+    </div>
+    <h1>Armá tu pedido</h1>
+    <p class="sub">Agregá los productos con calma. Cuando esté listo, lo mandás por WhatsApp en un solo mensaje.</p>
+  </header>
+  <div class="status" id="status">Cargando productos…</div>
+
+  <div>
+    <label for="farmacia">Nombre de tu farmacia</label>
+    <input id="farmacia" placeholder="Ej: Farmacia San Martín" autocomplete="organization">
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" id="t-prod" role="tab" aria-selected="true">Productos</button>
+    <button class="tab" id="t-ped" role="tab" aria-selected="false">Mi pedido<span class="badge" id="badge">0</span></button>
+  </div>
+
+  <section id="v-prod">
+    <div class="filters">
+      <div>
+        <label for="q">Buscar producto</label>
+        <input id="q" type="search" placeholder="Nombre, droga, código o laboratorio" autocomplete="off">
+      </div>
+      <div>
+        <label for="cat">Categoría</label>
+        <select id="cat"><option value="">Todas</option></select>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <section id="v-ped" hidden>
+    <div class="slip">
+      <div class="slip-h"><span>Nota de pedido</span><span id="fecha"></span></div>
+      <div id="lines"></div>
+      <div>
+        <label for="obs">Observaciones</label>
+        <textarea id="obs" placeholder="Ej: si no hay amoxicilina 500, mandar 875"></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn wa" id="send" href="#" target="_blank" rel="noopener">Enviar pedido por WhatsApp</a>
+      <div class="row">
+        <button class="btn ghost" id="copy">Copiar texto</button>
+        <button class="btn ghost" id="clear">Vaciar pedido</button>
+      </div>
+      <div class="row" id="confirm" hidden>
+        <button class="btn danger" id="yes">Sí, vaciar</button>
+        <button class="btn ghost" id="no">Cancelar</button>
+      </div>
+      <p class="note">Tu pedido queda guardado en este celular aunque cierres la página. Si WhatsApp no se abre, tocá "Copiar texto" y pegalo en el chat con la vendedora (+54 9 351 244-4832).</p>
+      <details>
+        <summary class="note" style="cursor:pointer">Ver cómo llega el mensaje</summary>
+        <pre id="preview"></pre>
+      </details>
+    </div>
+  </section>
+</div>
+
+<div class="bar">
+  <div class="bar-in">
+    <span class="count" id="barcount">Pedido vacío</span>
+    <button class="btn" id="go">Ver pedido</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// ===== Configuración =====
+const WHATSAPP_VENDEDORA = "5493512444832";
+const SHEET_ID = "137Vu6p_FYgUBnScpx62_yqoEatbo0fmjo5h8-5MA0rk";
+const SHEET_GID = "1772605070";
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+const MAX_RESULTADOS = 60;
+const POCAS_UNIDADES = 10;
+
+// Muestra de respaldo (filas de tu hoja) por si no se puede leer en vivo.
+const MUESTRA = `Codigo,Productos,Stock ,Categoria,Laboratorio
+015329,ROPA - EQUIPO DESCARTABLE CIRUGIA GENERAL X UNID.,15,DESCARTABLES,SALUS
+368999,"DIPIRONA 50 MG/ML, JARABE X 100 ML - DIPIRONA KLONAL - (H-12)",238,JARABES / SOLUCIONES,KLONAL
+357319,PAPEL P/ECG ROLLO  80MM X 20MTS,6,DESCARTABLES,CARDIOCHARTS
+006776,"KETOROLAC TROMETAMINA 20 MG, COMPRIMIDO - KEMANAT 20",36260,COMPRIMIDOS / CAPSULAS,MICROSULES ARG.
+006776,"KETOROLAC TROMETAMINA 20 MG, COMPRIMIDO - KEMANAT 20",-410,COMPRIMIDOS / CAPSULAS,MICROSULES ARG.
+368329,AGUJA FISTULA ARTERIOVENOSA 16 G,18,DESCARTABLES,WEGO
+009694,"LEVOMEPROMAZINA 25 MG, COMPRIMIDO * - MEPROZIN - (H-10-1000)  *",2900,PSICOTROPICOS*,ROSPAW
+002222,"DEXAMETASONA 4 MG/ML, INYECTABLE 2 ML (8 MG)",1506,AMPOLLAS / INYECTABLES DESCARTABLES,DENVER FARMA
+364469,"TUBO ENDOTRAQUEAL Nº 3,5 C/BALON SILICONADO ORAL/NASAL",24,TUBO ENDOTRAQUEAL,ELIT
+006245,ACICLOVIR 5% UNGUENTO ENVASE X 5 GR -  XICLOVIR 5 % - (H-1),41,CREMAS / GELES / UNGUENTOS,LAZAR
+368651,COMPRESA ANTIMICROBIAL ABSORBENTE PARA DRENAJE 2 X 2 (5.1 CM X 5.1 CM),266,DESC - OTROS,COVIDIEN
+357361,FRASCO PLASTICO X 125 ML ESTERIL INDIVIDUAL,-25,FRASCOS ESTERILES,EUROMIX`;
+
+// ===== Lectura de la hoja =====
+function parseCSV(text){
+  const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c=='"'){if(text[i+1]=='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else if(c=='"')q=true; else if(c==','){row.push(f);f="";}
+    else if(c=='\n'||c=='\r'){if(c=='\r'&&text[i+1]=='\n')i++;row.push(f);rows.push(row);row=[];f="";}
+    else f+=c;}
+  if(f||row.length){row.push(f);rows.push(row);}
+  return rows;
+}
+function armarProductos(src){
+  const rows=typeof src==="string"?parseCSV(src):src; if(!rows.length)return [];
+  const h=rows[0].map(x=>x.trim().toLowerCase());
+  const ix=n=>h.findIndex(x=>x.startsWith(n));
+  const iC=ix("codigo"),iP=ix("producto"),iS=ix("stock"),iCat=ix("categoria"),iL=ix("laboratorio");
+  const map=new Map();
+  for(const r of rows.slice(1)){
+    const cod=(r[iC]||"").trim(), nom=(r[iP]||"").trim(); if(!cod||!nom)continue;
+    const st=parseFloat(String(r[iS]||"0").replace(/\./g,"").replace(",","."))||0;
+    // Un mismo código puede tener varias filas (lotes/movimientos): se suma el stock.
+    if(map.has(cod)){map.get(cod).stock+=st;continue;}
+    map.set(cod,{cod,nom,stock:st,cat:(r[iCat]||"").trim(),lab:(r[iL]||"").trim()});
+  }
+  return [...map.values()].sort((a,b)=>a.nom.localeCompare(b.nom,"es"));
+}
+
+let PRODUCTOS=[], byCod={};
+function cargar(csv,enVivo){
+  PRODUCTOS=armarProductos(csv); byCod=Object.fromEntries(PRODUCTOS.map(p=>[p.cod,p]));
+  const cats=[...new Set(PRODUCTOS.map(p=>p.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
+  $("cat").innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join("");
+  const s=$("status");
+  if(enVivo){s.className="status";s.textContent=`${PRODUCTOS.length} productos · stock actualizado ${new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})}`;}
+  else{s.className="status warn";s.textContent="Vista previa: no se pudo leer la hoja en vivo desde acá, se muestran algunos productos de ejemplo. Publicada en tu sitio, la página lee la hoja completa.";}
+  render();
+}
+
+// ===== Estado guardado =====
+const KEY="pedido-rapido-v2";
+let state={farmacia:"",obs:"",items:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.items)state=Object.assign(state,s);}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const totalItems=()=>Object.keys(state.items).length;
+const totalUnits=()=>Object.values(state.items).reduce((a,b)=>a+b.q,0);
+const esPsico=p=>/psicotrop/i.test(p.cat)||/psicotrop/i.test(p.nom);
+
+function estado(p){ if(p.stock<=0)return["Sin stock","no"]; if(p.stock<=POCAS_UNIDADES)return["Últimas unidades","warn"]; return["Disponible","ok"]; }
+
+function setQty(cod,q){
+  q=Math.max(0,Math.min(99999,q|0));
+  if(q){const p=byCod[cod]||state.items[cod];state.items[cod]={q,nom:p.nom,lab:p.lab};} else delete state.items[cod];
+  save(); render();
+}
+function stepper(cod,q){return `<div class="step"><button aria-label="Quitar uno" data-d="-1" data-c="${esc(cod)}">−</button><input class="q" inputmode="numeric" aria-label="Cantidad" value="${q}" data-c="${esc(cod)}"><button aria-label="Agregar uno" data-d="1" data-c="${esc(cod)}">+</button></div>`;}
+
+function renderList(){
+  if(!PRODUCTOS.length){$("list").innerHTML="";return;}
+  const q=norm($("q").value.trim()), cat=$("cat").value;
+  const words=q.split(/\s+/).filter(Boolean);
+  const rows=PRODUCTOS.filter(p=>(!cat||p.cat===cat)&&words.every(w=>norm(p.nom+" "+p.lab+" "+p.cod).includes(w)));
+  const shown=rows.slice(0,MAX_RESULTADOS);
+  let html=shown.map(p=>{
+    const [txt,cls]=estado(p); const qty=state.items[p.cod]?.q||0;
+    const ctrl=qty?stepper(p.cod,qty):`<button class="add" data-add="${esc(p.cod)}" ${p.stock<=0?"disabled":""}>${p.stock<=0?"Sin stock":"Agregar"}</button>`;
+    return `<div class="prod ${qty?"in":""}"><div class="info"><div class="name">${esc(p.nom)}</div><div class="meta">Cód. ${esc(p.cod)} · ${esc(p.lab)}</div><div class="pills"><span class="pill ${cls}">${txt}</span>${esPsico(p)?'<span class="pill warn">Requiere vale/receta</span>':""}</div></div>${ctrl}</div>`;
+  }).join("");
+  if(!rows.length) html=`<div class="empty">No encontramos "${esc($("q").value)}". Podés anotarlo en Observaciones.</div>`;
+  else if(rows.length>shown.length) html+=`<div class="more">Mostrando ${shown.length} de ${rows.length}. Escribí más para afinar la búsqueda.</div>`;
+  $("list").innerHTML=html;
+}
+
+function mensaje(){
+  const lines=Object.entries(state.items).map(([c,it],i)=>`${i+1}. [${c}] ${it.nom} — *${it.q} u.*`);
+  let m=`*PEDIDO* — ${state.farmacia.trim()||"(sin nombre de farmacia)"}\n${new Date().toLocaleDateString("es-AR")}\n\n${lines.join("\n")}\n\nTotal: ${totalItems()} productos, ${totalUnits()} unidades`;
+  if(state.obs.trim()) m+=`\n\n*Observaciones:* ${state.obs.trim()}`;
+  return m;
+}
+function renderPedido(){
+  const ents=Object.entries(state.items);
+  $("lines").innerHTML=ents.length?ents.map(([c,it],i)=>`<div class="line"><span class="n">${i+1}.</span><div class="info"><div class="name">${esc(it.nom)}</div><div class="meta">Cód. ${esc(c)} · ${esc(it.lab||"")}</div></div>${stepper(c,it.q)}<button class="rm" data-rm="${esc(c)}" aria-label="Quitar">✕</button></div>`).join(""):`<div class="empty">Todavía no agregaste productos.</div>`;
+  const m=mensaje(); $("preview").textContent=m;
+  $("send").href=`https://wa.me/${WHATSAPP_VENDEDORA}?text=${encodeURIComponent(m)}`;
+  $("send").style.opacity=ents.length?1:.5; $("send").style.pointerEvents=ents.length?"auto":"none";
+}
+
+let view="prod";
+function render(){
+  renderList(); renderPedido();
+  const n=totalItems(); $("badge").textContent=n;
+  $("barcount").textContent=n?`${n} producto${n>1?"s":""} · ${totalUnits()} u.`:"Pedido vacío";
+  $("go").textContent=view==="prod"?"Ver pedido":"Seguir agregando";
+}
+function show(v){view=v;$("v-prod").hidden=v!=="prod";$("v-ped").hidden=v!=="ped";$("t-prod").setAttribute("aria-selected",v==="prod");$("t-ped").setAttribute("aria-selected",v==="ped");render();window.scrollTo(0,0);}
+function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,1800);}
+
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button"); if(!t)return;
+  if(t.dataset.add){setQty(t.dataset.add,1);toast("Agregado al pedido");}
+  else if(t.dataset.d){setQty(t.dataset.c,(state.items[t.dataset.c]?.q||0)+(+t.dataset.d));}
+  else if(t.dataset.rm){setQty(t.dataset.rm,0);}
+});
+document.addEventListener("change",e=>{if(e.target.classList.contains("q"))setQty(e.target.dataset.c,parseInt(e.target.value)||0);});
+let tq; $("q").addEventListener("input",()=>{clearTimeout(tq);tq=setTimeout(renderList,120);});
+$("cat").addEventListener("change",renderList);
+$("t-prod").onclick=()=>show("prod"); $("t-ped").onclick=()=>show("ped");
+$("go").onclick=()=>show(view==="prod"?"ped":"prod");
+$("farmacia").value=state.farmacia; $("obs").value=state.obs;
+$("farmacia").addEventListener("input",e=>{state.farmacia=e.target.value;save();renderPedido();});
+$("obs").addEventListener("input",e=>{state.obs=e.target.value;save();renderPedido();});
+$("copy").onclick=()=>{const m=mensaje();const fb=()=>{const d=$("preview").closest("details");d.open=true;const r=document.createRange();r.selectNodeContents($("preview"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Texto seleccionado: copialo");};try{navigator.clipboard.writeText(m).then(()=>toast("Texto copiado"),fb);}catch(e){fb();}};
+$("clear").onclick=()=>{$("confirm").hidden=false;};
+$("no").onclick=()=>{$("confirm").hidden=true;};
+$("yes").onclick=()=>{state.items={};state.obs="";$("obs").value="";save();$("confirm").hidden=true;render();toast("Pedido vaciado");};
+$("fecha").textContent=new Date().toLocaleDateString("es-AR");
+
+// Método 2: JSONP de Google (funciona también abriendo el archivo desde la PC).
+function leerJSONP(){
+  return new Promise((ok,fail)=>{
+    const cb="tf_cb_"+Date.now(), s=document.createElement("script");
+    const t=setTimeout(()=>{cleanup();fail("timeout");},15000);
+    function cleanup(){clearTimeout(t);delete window[cb];s.remove();}
+    window[cb]=resp=>{cleanup();
+      try{
+        if(resp.status==="error")return fail("hoja");
+        const tb=resp.table;
+        // Números: se usa el valor real, salvo códigos con ceros adelante (ej. 015329).
+        const rows=tb.rows.map(r=>(r.c||[]).map(c=>{if(c==null)return"";if(typeof c.v==="number")return (c.f&&/^0\d/.test(c.f))?c.f:String(c.v);return String(c.v??c.f??"");}));
+        const labels=tb.cols.map(c=>c.label||"");
+        // Si Google no detectó encabezados, la primera fila los trae.
+        if(!labels.some(l=>/codigo/i.test(l))){ok(rows);}else ok([labels,...rows]);
+      }catch(e){fail("formato");}
+    };
+    s.onerror=()=>{cleanup();fail("red");};
+    s.src=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${cb}&gid=${SHEET_GID}&headers=1&_=${Date.now()}`;
+    document.head.appendChild(s);
+  });
+}
+const tieneCodigos=rows=>rows.length&&rows[0].some(x=>/codigo/i.test(String(x)));
+
+render();
+fetch(SHEET_URL,{cache:"no-store"})
+  .then(r=>{if(!r.ok)throw 0;return r.text();})
+  .then(t=>{if(!/codigo/i.test(t.slice(0,200)))throw 0;cargar(t,true);})
+  .catch(()=>leerJSONP().then(rows=>{if(!tieneCodigos(rows))throw 0;cargar(rows,true);}))
+  .catch(()=>cargar(MUESTRA,false));
+</script>
